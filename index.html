@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>线下活动 | 官方信息收集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2f4f8;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 24px 20px 48px;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .poster-layer {
+            background: #f9fafc;
+            border-radius: 32px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+        }
+        .poster-image {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            background: #eef2fa;
+            min-height: 200px;
+        }
+        .poster-placeholder {
+            background: linear-gradient(145deg, #f0f3f9, #e9edf4);
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: #5b6e8c;
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        .info-card {
+            margin-bottom: 28px;
+        }
+        .primary-btn {
+            background: #1e2f3e;
+            border: none;
+            width: 100%;
+            padding: 18px 0;
+            font-size: 17px;
+            font-weight: 600;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .primary-btn:active {
+            transform: scale(0.97);
+        }
+
+        .action-layer {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            margin-bottom: 32px;
+        }
+        .highlight-btn {
+            flex: 1;
+            background: #ffffff;
+            border: 1.5px solid #cfdee9;
+            padding: 16px 0;
+            border-radius: 48px;
+            font-weight: 620;
+            font-size: 16px;
+            color: #1f3b4c;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .highlight-btn:first-child {
+            background: #fef7e0;
+            border-color: #e9d6a3;
+            color: #9b6f0b;
+        }
+        .highlight-btn:last-child {
+            background: #eef3fc;
+            border-color: #bed2e9;
+            color: #1f6392;
+        }
+        .highlight-btn:active {
+            transform: scale(0.96);
+        }
+
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(18, 25, 35, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s ease;
+        }
+        .modal-mask.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-container {
+            background: white;
+            width: 86%;
+            max-width: 500px;
+            border-radius: 40px;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 20px 24px 8px 24px;
+            border-bottom: 1px solid #eef2f6;
+        }
+        .modal-header h3 {
+            font-size: 22px;
+            font-weight: 620;
+            color: #1e2f3c;
+        }
+        .modal-body {
+            padding: 20px 24px 28px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: 550;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
+            color: #334e68;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cfdfed;
+            border-radius: 28px;
+            font-size: 15px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 28px;
+            margin: 8px 0 4px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+        }
+        .upload-box {
+            border: 1px dashed #9bb7d0;
+            border-radius: 28px;
+            padding: 12px;
+            text-align: center;
+            background: #fafcff;
+            position: relative;
+            cursor: pointer;
+        }
+        .upload-preview-img {
+            max-width: 100%;
+            max-height: 110px;
+            border-radius: 16px;
+            margin-top: 8px;
+        }
+        .submit-modal-btn {
+            background: #1e2f3e;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 60px;
+            font-weight: 600;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+        .close-modal-btn {
+            background: #eef3fa;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 60px;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+        .error-text {
+            color: #c2412c;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        .success-container {
+            text-align: center;
+            padding: 56px 24px;
+        }
+        .success-container h2 {
+            font-size: 28px;
+            margin: 20px 0 12px;
+        }
+        .back-home-btn {
+            background: #1e2f3e;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 60px;
+            margin-top: 32px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <div v-if="currentView === 'home'">
+        <div class="poster-layer">
+            <img v-if="posterUrl" :src="posterUrl" class="poster-image" alt="活动规则海报">
+            <div v-else class="poster-placeholder">活动主视觉海报<br>待管理员更新</div>
+        </div>
+
+        <div class="info-card">
+            <button class="primary-btn" @click="openFormModal">点击填写信息</button>
+        </div>
+
+        <div class="action-layer">
+            <button class="highlight-btn" @click="openScheduleModal">赛事赛程</button>
+            <button class="highlight-btn" @click="openPrizeModal">买电视抽球衣奖品</button>
+        </div>
+    </div>
+
+    <div v-else-if="currentView === 'success'" class="success-container" style="background:white;border-radius:32px;">
+        <div style="font-size: 48px;">✓</div>
+        <h2>提交成功</h2>
+        <p style="color: #4f6f8f;">感谢您参与本次活动</p>
+        <button class="back-home-btn" @click="resetToHome">返回活动首页</button>
+    </div>
+
+    <div class="modal-mask" :class="{ active: modalActive }" @click.self="closeModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>{{ modalTitle }}</h3>
+            </div>
+            <div class="modal-body">
+                <div v-if="modalType === 'form'">
+                    <form @submit.prevent="submitFormFromModal">
+                        <div class="form-group">
+                            <label>姓名 *</label>
+                            <input type="text" v-model="form.name" placeholder="真实姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>联系电话 *</label>
+                            <input type="tel" v-model="form.phone" placeholder="手机号码">
+                        </div>
+                        <div class="form-group">
+                            <label>电子邮箱 *</label>
+                            <input type="email" v-model="form.email" placeholder="example@domain.com">
+                        </div>
+                        <div class="form-group">
+                            <label>购机门店名称 *</label>
+                            <input type="text" v-model="form.storeName" placeholder="例如: 北京朝阳苏宁店">
+                        </div>
+                        <div class="form-group">
+                            <label>付款方式 *</label>
+                            <div class="radio-group">
+                                <label><input type="radio" value="全款" v-model="form.paymentMethod"> 全款</label>
+                                <label><input type="radio" value="分期" v-model="form.paymentMethod"> 分期</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>电视机身序列号(S/N)照片 *</label>
+                            <div class="upload-box" @click="triggerSnUpload">点击上传照片</div>
+                            <input type="file" accept="image/*" ref="snFileInput" @change="handleSnUpload" style="display:none">
+                            <img v-if="snPreviewUrl" :src="snPreviewUrl" class="upload-preview-img">
+                        </div>
+                        <div class="form-group">
+                            <label>原始购机小票照片 * (购买日期需在活动期内)</label>
+                            <div class="upload-box" @click="triggerReceiptUpload">上传小票照片</div>
+                            <input type="file" accept="image/*" ref="receiptFileInput" @change="handleReceiptUpload" style="display:none">
+                            <img v-if="receiptPreviewUrl" :src="receiptPreviewUrl" class="upload-preview-img">
+                        </div>
+                        <div class="form-group">
+                            <label>Facebook 个人账号昵称 *</label>
+                            <input type="text" v-model="form.facebookNick" placeholder="Facebook 昵称">
+                        </div>
+                        <div class="error-text" v-if="formError">{{ formError }}</div>
+                        <button type="submit" class="submit-modal-btn" :disabled="submitting">{{ submitting ? '提交中...' : '确认提交' }}</button>
+                        <button type="button" class="close-modal-btn" @click="closeModal">取消</button>
+                    </form>
+                </div>
+                <div v-else-if="modalType === 'schedule'" v-html="scheduleHtml"></div>
+                <div v-else-if="modalType === 'prize'" v-html="prizeDetailHtml"></div>
+                <div v-if="modalType !== 'form'" style="margin-top:20px">
+                    <button class="close-modal-btn" @click="closeModal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+<script>
+    const STORAGE_KEYS = {
+        POSTER: 'event_poster_url_v2',
+        SCHEDULE: 'event_schedule_content_v2',
+        SUBMISSIONS: 'event_submissions_v2'
+    };
+    function initStorage() {
+        if (!localStorage.getItem(STORAGE_KEYS.POSTER)) localStorage.setItem(STORAGE_KEYS.POSTER, '');
+        if (!localStorage.getItem(STORAGE_KEYS.SCHEDULE)) {
+            localStorage.setItem(STORAGE_KEYS.SCHEDULE, '<p>小组赛程<br/>10月28日 19:30 蓝焰队 vs 雷霆队<br/>10月29日 20:00 先锋队 vs 飓风队</p>');
+        }
+        if (!localStorage.getItem(STORAGE_KEYS.SUBMISSIONS)) localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify([]));
+    }
+    initStorage();
+    function saveUserSubmission(data) {
+        const submissions = JSON.parse(localStorage.getItem(STORAGE_KEYS.SUBMISSIONS));
+        submissions.push({ ...data, submitTime: new Date().toISOString(), id: Date.now() });
+        localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions));
+        return true;
+    }
+    new Vue({
+        el: '#app',
+        data: {
+            currentView: 'home',
+            posterUrl: '',
+            scheduleHtml: '',
+            prizeDetailHtml: '<p>买电视抽球衣活动规则<br/>活动期间购买指定型号电视，即可参与抽奖。<br/>奖品：签名球衣(5件) + 运动包(10个)</p>',
+            modalActive: false,
+            modalTitle: '',
+            modalType: '',
+            form: { name: '', phone: '', email: '', storeName: '', paymentMethod: '全款', snImageBase64: '', receiptImageBase64: '', facebookNick: '' },
+            snPreviewUrl: '', receiptPreviewUrl: '', formError: '', submitting: false
+        },
+        mounted() { this.loadPoster(); this.loadSchedule(); },
+        methods: {
+            loadPoster() { this.posterUrl = localStorage.getItem(STORAGE_KEYS.POSTER) || ''; },
+            loadSchedule() { this.scheduleHtml = localStorage.getItem(STORAGE_KEYS.SCHEDULE); },
+            openFormModal() { this.modalType = 'form'; this.modalTitle = '参与信息登记'; this.modalActive = true; },
+            openScheduleModal() { this.modalType = 'schedule'; this.modalTitle = '赛事赛程'; this.modalActive = true; },
+            openPrizeModal() { this.modalType = 'prize'; this.modalTitle = '买电视抽球衣奖品'; this.modalActive = true; },
+            closeModal() { this.modalActive = false; },
+            triggerSnUpload() { this.$refs.snFileInput.click(); },
+            triggerReceiptUpload() { this.$refs.receiptFileInput.click(); },
+            handleSnUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => { this.snPreviewUrl = ev.target.result; this.form.snImageBase64 = ev.target.result; };
+                reader.readAsDataURL(file);
+            },
+            handleReceiptUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => { this.receiptPreviewUrl = ev.target.result; this.form.receiptImageBase64 = ev.target.result; };
+                reader.readAsDataURL(file);
+            },
+            validateForm() {
+                const f = this.form;
+                if (!f.name.trim()) return '姓名不能为空';
+                if (!f.phone.trim()) return '联系电话不能为空';
+                if (!f.email.trim() || !/^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(f.email)) return '邮箱格式不正确';
+                if (!f.storeName.trim()) return '购机门店名称不能为空';
+                if (!f.paymentMethod) return '请选择付款方式';
+                if (!f.snImageBase64) return '请上传电视机身序列号照片';
+                if (!f.receiptImageBase64) return '请上传购机小票照片';
+                if (!f.facebookNick.trim()) return 'Facebook昵称不能为空';
+                return '';
+            },
+            submitFormFromModal() {
+                const err = this.validateForm();
+                if (err) { this.formError = err; return; }
+                this.submitting = true;
+                saveUserSubmission({ name: this.form.name, phone: this.form.phone, email: this.form.email, storeName: this.form.storeName, paymentMethod: this.form.paymentMethod, facebookNick: this.form.facebookNick });
+                this.modalActive = false;
+                this.currentView = 'success';
+                this.submitting = false;
+            },
+            resetToHome() { this.currentView = 'home'; this.form = { name: '', phone: '', email: '', storeName: '', paymentMethod: '全款', snImageBase64: '', receiptImageBase64: '', facebookNick: '' }; this.snPreviewUrl = ''; this.receiptPreviewUrl = ''; this.loadPoster(); }
+        }
+    });
+</script>
+</body>
+</html>
